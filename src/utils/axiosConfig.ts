@@ -27,9 +27,12 @@ const refreshAccessToken = async () => {
       throw new Error("No refresh token available");
     }
 
-    const response = await axios.post("http://localhost:3000/refresh-token", {
-      refreshToken,
-    });
+    const response = await axios.post(
+      "http://localhost:3000/auth/refresh-token",
+      {
+        refreshToken,
+      }
+    );
     const { accessToken } = response.data;
 
     // Store the new access token

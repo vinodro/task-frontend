@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"; // Use useNavigate instead of us
 import InputComponent from "../component/input";
 import { useForm } from "react-hook-form";
 import { Button } from "primereact/button";
+import { AxiosError } from "axios";
 
 interface IFormInput {
   name?: string;
@@ -24,7 +25,12 @@ const Login = () => {
     const { email, password } = e;
     try {
       const response = await axios.post("/auth/login", { email, password });
-
+      if (
+        response.data.message ==
+        "Account is not verified. Please check your email for a verification code."
+      ) {
+        alert("Your Account verification code has send kindly check your mail");
+      }
       const { accessToken, refreshToken } = response.data;
 
       localStorage.setItem("accessToken", accessToken);
@@ -34,7 +40,9 @@ const Login = () => {
         navigate("/tasks");
       }
     } catch (error) {
-      alert("Invalid credentials");
+      if (error instanceof AxiosError && error.response) {
+        alert(error?.response?.data?.message || "Invalid credentials");
+      }
     }
   };
 

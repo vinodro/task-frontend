@@ -1,39 +1,63 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AxiosError } from "axios";
+import axios from "../utils/axiosConfig";
 
 const VerifyEmail = () => {
-  const [token, setToken] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("/api/auth/verify-email", { token });
-      setMessage(response.data.message);
-      navigate("/login");
-    } catch (error) {
-      setMessage("Invalid or expired token");
-    }
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      const queryParams = new URLSearchParams(location.search);
+      const token = queryParams.get("token"); // Extract the token from URL
+
+      if (!token) {
+        setMessage("Invalid or missing token.");
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Make a request to your backend to verify the email
+        const response = await axios.get(`/auth/verify-email?token=${token}`);
+
+        setMessage(response.data.message || "Email verified successfully!");
+        setError(false);
+
+        // Redirect to login or dashboard after verification
+        setTimeout(() => navigate("/login"), 1000); // Redirect in 3 seconds
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          setMessage(
+            error.response?.data?.message ||
+              "Failed to verify email. Try again."
+          );
+          setError(true);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyEmail();
+  }, [location.search, navigate]);
 
   return (
-    <div>
-      <h2>Verify Email</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      {loading ? (
+        <p>Verifying your email, please wait...</p>
+      ) : (
         <div>
-          <label>Verification Token</label>
-          <input
-            type="text"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            required
-          />
+          <p style={{ color: error ? "red" : "green" }}>{message}</p>
+          {error && <button onClick={() => navigate("/login")}>ReLogin</button>}
         </div>
-        <button type="submit">Verify Email</button>
-      </form>
-      {message && <p>{message}</p>}
+      )}
     </div>
   );
 };

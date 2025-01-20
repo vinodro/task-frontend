@@ -9,6 +9,7 @@ interface Task {
   title: string;
   description: string;
   completed: boolean;
+  _id?: any;
 }
 
 const TaskPage: React.FC = () => {
@@ -16,39 +17,38 @@ const TaskPage: React.FC = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<Task>();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [newTaskTitle, setNewTaskTitle] = useState<string>("");
-  const [newTaskDescription, setNewTaskDescription] = useState<string>("");
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get("/tasks"); // Assuming your backend returns tasks at this endpoint
+      setTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
   // Fetch tasks from the backend
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get("/api/tasks"); // Assuming your backend returns tasks at this endpoint
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
     fetchTasks();
   }, []);
 
   // Handle adding a new task
   const onSubmit = async (e: Task) => {
-    // e.preventDefault();
     try {
       const newTask = {
-        title: newTaskTitle,
-        description: newTaskDescription,
+        title: e.title,
+        description: e.description,
         completed: false,
       };
-      const response = await axios.post("/api/tasks", newTask);
-      setTasks((prevTasks) => [...prevTasks, response.data]);
-      setNewTaskTitle("");
-      setNewTaskDescription("");
+      const response = await axios.post("/tasks", newTask);
+      setValue("title", "");
+      setValue("description", "");
+      fetchTasks();
+      // setTasks((prevTasks) => [...prevTasks, response.data]);
     } catch (error) {
       console.error("Error adding task:", error);
     }
@@ -57,13 +57,14 @@ const TaskPage: React.FC = () => {
   // Handle task completion toggle
   const handleToggleCompletion = async (taskId: string) => {
     try {
-      const taskToUpdate = tasks.find((task) => task.id === taskId);
+      const taskToUpdate = tasks.find((task) => task._id === taskId);
+      console.log(taskToUpdate, taskId, tasks);
       if (taskToUpdate) {
         const updatedTask = {
           ...taskToUpdate,
           completed: !taskToUpdate.completed,
         };
-        await axios.put(`/api/tasks/${taskId}`, updatedTask);
+        await axios.put(`/tasks/${taskId}`, updatedTask);
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === taskId
@@ -101,7 +102,7 @@ const TaskPage: React.FC = () => {
         />
 
         <Button
-          label="Login"
+          label="Submit"
           type="button"
           className="p-button-primary"
           onClick={handleSubmit(onSubmit)}
@@ -118,7 +119,7 @@ const TaskPage: React.FC = () => {
               <div>
                 <h4>{task.title}</h4>
                 <p>{task.description}</p>
-                <button onClick={() => handleToggleCompletion(task.id)}>
+                <button onClick={() => handleToggleCompletion(task._id)}>
                   {task.completed ? "Mark as Incomplete" : "Mark as Completed"}
                 </button>
               </div>
