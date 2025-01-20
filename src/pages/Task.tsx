@@ -72,6 +72,7 @@ const TaskPage: React.FC = () => {
               : task
           )
         );
+        fetchTasks();
       }
     } catch (error) {
       console.error("Error updating task:", error);
