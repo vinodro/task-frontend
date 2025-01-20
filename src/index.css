@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+.password-field-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-field-container .p-inputtext {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.password-field-container .p-password .p-password-icon {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%); 
+  position: absolute;
+}
+
+.p-password-input.p-inputtext, .p-inputtext.p-password, .p-inputtext.p-password>.p-icon-field {
+  width: 100%;
+}
