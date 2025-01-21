@@ -27,9 +27,6 @@ const Register = () => {
     try {
       const response = await axios.post("/auth/register", data);
       setMessage(response.data.message);
-      if (response.data.message) {
-        navigate("/verify-email");
-      }
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         // AxiosError type with response
