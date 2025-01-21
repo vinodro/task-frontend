@@ -98,7 +98,7 @@ const Register = () => {
         <Button
           label="Login"
           className="p-button-link"
-          onClick={() => navigate("/login")}
+          // onClick={() => navigate("/login")}
         />
       </div>
     </div>
