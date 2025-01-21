@@ -27,6 +27,7 @@ const Register = () => {
     try {
       const response = await axios.post("/auth/register", data);
       setMessage(response.data.message);
+      alert(response.data.message);
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         // AxiosError type with response
@@ -92,7 +93,7 @@ const Register = () => {
         />
         <Button label="Register" type="submit" className="p-button-primary" />
       </form>
-      {/* {message && <p>{message}</p>} */}
+      {message && <p>{message}</p>}
       <div className="mt-3 flex align-items-center">
         <div>Existing user? </div>
         <Button
