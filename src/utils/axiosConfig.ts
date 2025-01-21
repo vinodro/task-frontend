@@ -13,7 +13,9 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3000", // Change to your backend URL
+  baseURL:
+    process.env.REACT_APP_BACKEND_URL ||
+    "https://task-backend-eaqu.onrender.com", // Change to your backend URL
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,7 +30,8 @@ const refreshAccessToken = async () => {
     }
 
     const response = await axios.post(
-      "http://localhost:3000/auth/refresh-token",
+      `${process.env.REACT_APP_BACKEND_URL}/auth/refresh-token` ||
+        "https://task-backend-eaqu.onrender.com/auth/refresh-token",
       {
         refreshToken,
       }
